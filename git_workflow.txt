@@ -1,0 +1,105 @@
+===== git workflow and Jenkins project structure =====
+
+
+Let's avoid merge conflicts :)
+
+
+To set up your repo/branch:
+   
+
+1. Make a new folder locally where you will do your code review from. Leave it empty for now. 
+
+2. Make a new repo on Bitbucket/GitHub/GitLab, and run the command from the "My code is ready to be pushed" section in your new directory from (1):
+    $ cd existing-project
+    $ git init
+    $ git add --all
+    $ git commit -m "Initial Commit"
+    $ git remote add origin https://stash.arbfund.com/scm/csa/jenkins_jordan_test.git
+    $ git push -u origin master
+
+3. Commit the following minimal files to master: .gitignore, __init__.py
+   DO NOT commit your main python script. If you do, just delete the repo and start over.
+   If you commit your entire python script at this stage, the reviewers will not be able to comment on anything.
+   They will only be able to comment within + or - 10 lines of a given change.
+
+4. The next step is to make a new branch. We need a new branch to fully review a pull request. 
+   Once your master branch is made, there are two ways to make another branch from master:
+ 
+    1. Remotely first (on Bitbucket via the browser), then locally. 
+       If you do this, make a new branch on Bitbucket in the browser, and then enter these commands.
+
+        $ git fetch
+        $ git checkout <new_feature_branch_name>
+
+    - or -
+
+    2. Locally first (via gitbash or cmd), then remotely 
+       If you do this, you don't have to do anything in the browser.
+
+        $ git checkout -b <new_feature_branch_name>
+        $ git push -u origin <new_feature_branch_name>
+
+    Take your pick. If you want to confirm which branch you are on, simply run:
+
+    $ git branch
+
+
+5.  Once this new branch is obtained locally, create a python 3.6 venv (download 3.6 if you haven't already), and update the
+    .gitignore and requirements.txt and/or setup.py, etc. as needed. We really only need requirements.txt technically.
+    add Jenkinsfile, .gitignore, __init__.py, etc.
+
+	$ venv\Scripts\activate
+	$ pip install package1 pagacke2 package3
+	$ pip freeze > requirements.txt
+
+6.  Do your project editing here. Commit and push to YOUR branch:
+
+    $ git add .	
+    $ git commit -m "feat: blah blah blah"
+    $ git push -u <remote> <branch_name>
+
+    If your pull request is marked as "needs work" just keep editing here and repeating the above commands.
+
+    You want your project to look like this in the end:
+    
+    Client_Project/
+	|
+	|____ .git/
+	|____ venv/
+	|____ __init__.py
+	|____ README.md
+	|____ Jenkinsfile
+	|____ .gitignore
+	|____ requirements.txt
+	|____ script_name.py
+
+
+7.  When you're script is ready for Jenkins, create a pull request on bitbucket. Again, if your pull request is marked as "needs work",
+    make the requested changes, and use these commands to update the pull request:
+
+    $ git add .	
+    $ git commit -m "feat: blah blah blah"
+    $ git push -u <remote> <branch_name>
+
+8.  Once review is complete, and any merge conflicts have been handled, click "Merge" on bitbucket
+
+9.  Tag your feature branch on master (annotated method preferred). 
+    Instructions are here: https://git-scm.com/book/en/v2/Git-Basics-Tagging
+
+    $ git tag -a <tag_name> -m "tag message"
+    $ git push origin <tag name>
+
+    Think of this step as making a respawn point in a video game. You're naming a specific commit something special so you 
+    can git checkout the tag name if you need to later.
+
+10. Once tagged, delete the old branch if everything is working as expected. You can't delete a branch that you're on,
+    so switch back to master:
+
+   $ git checkout master
+   $ git branch
+
+   Delete locally first:
+   $ git branch -D <branch_name>
+
+   Delete remotely next:
+   $ git push origin --delete <branch_name>
